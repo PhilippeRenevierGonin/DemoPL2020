@@ -8,13 +8,21 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.demoplpl.controleur.EcouteurDeBouton;
+import com.example.demoplpl.controleur.EcouteurDeReseau;
 import com.example.demoplpl.modele.Compteur;
 import com.example.demoplpl.vue.Vue;
+
+import java.net.URISyntaxException;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
 
 public class MainActivity extends Activity implements Vue {
 
     private TextView texte;
     private Button bouton;
+
+    private Socket mSocket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,42 +30,7 @@ public class MainActivity extends Activity implements Vue {
         // création de l'interface graphique
         setContentView(R.layout.activity_main);
 
-        texte = findViewById(R.id.text);
-        bouton = findViewById(R.id.button);
 
-        // création des objets métiers (ou modèle)
-        final Compteur cpt = new Compteur();
-
-        // création de l'écouteur (le controleur)
-        final EcouteurDeBouton ecouteur = new EcouteurDeBouton(this, cpt);
-
-        // pour montrer l'abonnement, ici avec 2 listeners dont un anonyme
-        // car dans Android ce sont des set = un seul listener
-        // pour faire simple, on aurait fait bouton.setOnClickListener(ecouteur);
-        bouton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("POUR MONTRER", "C'est le listener anonyme");
-                Log.d("POUR MONTRER", "je suis "+this);
-                Log.d("POUR MONTRER", "l'outter est "+MainActivity.this);
-
-
-                ecouteur.onClick(v);
-
-            }
-        });
-
-        texte.setOnClickListener(ecouteur);
-        // ou :
-        /*
-        texte.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-                cpt.raz();
-                mettreÀJourLAffichageDuCompteur(0);
-            }
-        }); */
     }
 
 
@@ -66,5 +39,38 @@ public class MainActivity extends Activity implements Vue {
     }
 
 
+    @Override
+    protected void onPause() {
+        super.onPause();
 
+        mSocket.disconnect();
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            Socket mSocket = IO.socket("http://10.0.2.2:10101");
+
+            EcouteurDeReseau net = new EcouteurDeReseau(this);
+
+            mSocket.on("valeur", net);
+
+
+            texte = findViewById(R.id.text);
+            bouton = findViewById(R.id.button);
+
+
+            // création de l'écouteur (le controleur)
+            EcouteurDeBouton ecouteur = new EcouteurDeBouton(this, mSocket);
+            bouton.setOnClickListener(ecouteur);
+
+            texte.setOnClickListener(ecouteur);
+
+            mSocket.connect();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
 }
