@@ -10,7 +10,11 @@ import android.widget.TextView;
 import com.example.demoplpl.controleur.EcouteurDeBouton;
 import com.example.demoplpl.controleur.EcouteurDeReseau;
 import com.example.demoplpl.modele.Compteur;
+import com.example.demoplpl.modele.Identité;
 import com.example.demoplpl.vue.Vue;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 
@@ -24,13 +28,15 @@ public class MainActivity extends Activity implements Vue {
 
     private Socket mSocket;
 
+    private Identité monIdentité ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // création de l'interface graphique
         setContentView(R.layout.activity_main);
 
-
+        monIdentité = new Identité("Super Appli");
     }
 
 
@@ -75,6 +81,14 @@ public class MainActivity extends Activity implements Vue {
             texte.setOnClickListener(ecouteur);
 
             mSocket.connect();
+
+
+            JSONObject identité = new JSONObject();
+            try {
+                identité.put("nom", monIdentité.getNom());
+            } catch (JSONException e) {
+                e.printStackTrace();}
+            mSocket.emit("je me connecte", identité);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
