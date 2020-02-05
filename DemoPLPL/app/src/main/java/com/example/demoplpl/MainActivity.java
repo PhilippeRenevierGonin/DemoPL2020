@@ -34,8 +34,14 @@ public class MainActivity extends Activity implements Vue {
     }
 
 
-    public void mettreÀJourLAffichageDuCompteur(int cpt) {
-        texte.setText(""+cpt);
+    public void mettreÀJourLAffichageDuCompteur(final int cpt) {
+
+        texte.post(new Runnable() {
+            @Override
+            public void run() {
+                texte.setText("" + cpt);
+            }
+        });
     }
 
 
