@@ -9,8 +9,7 @@ import android.widget.TextView;
 
 import com.example.demoplpl.controleur.EcouteurDeBouton;
 import com.example.demoplpl.controleur.EcouteurDeReseau;
-import com.example.demoplpl.modele.Compteur;
-import com.example.demoplpl.modele.Identité;
+
 import com.example.demoplpl.vue.Vue;
 
 import org.json.JSONException;
@@ -18,8 +17,10 @@ import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 
+import constantes.NET;
 import io.socket.client.IO;
 import io.socket.client.Socket;
+import metier.Identité;
 
 public class MainActivity extends Activity implements Vue {
 
@@ -67,7 +68,7 @@ public class MainActivity extends Activity implements Vue {
 
             EcouteurDeReseau net = new EcouteurDeReseau(this);
 
-            mSocket.on("valeur", net);
+            mSocket.on(NET.VALEUR_CPT, net);
 
 
             texte = findViewById(R.id.text);
@@ -88,7 +89,7 @@ public class MainActivity extends Activity implements Vue {
                 identité.put("nom", monIdentité.getNom());
             } catch (JSONException e) {
                 e.printStackTrace();}
-            mSocket.emit("je me connecte", identité);
+            mSocket.emit(NET.CONNEXION, identité);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

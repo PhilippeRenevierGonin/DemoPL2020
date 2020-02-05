@@ -8,6 +8,9 @@ import com.corundumstudio.socketio.listener.DataListener;
 import metier.Compteur;
 import metier.Identité;
 
+import static constantes.NET.*;
+
+
 public class Serveur {
 
 
@@ -36,7 +39,7 @@ public class Serveur {
         this.compteur = cpt;
         this.server = server;
 
-        this.server.addEventListener("je me connecte", Identité.class, new DataListener<Identité>() {
+        this.server.addEventListener(CONNEXION, Identité.class, new DataListener<Identité>() {
             @Override
             public void onData(SocketIOClient socketIOClient, Identité id, AckRequest ackRequest) throws Exception {
                 nouveauClient(socketIOClient, id);
@@ -44,7 +47,7 @@ public class Serveur {
         });
 
 
-        this.server.addEventListener("add", String.class, new DataListener<String>() {
+        this.server.addEventListener(AJOUTER, String.class, new DataListener<String>() {
             @Override
             public void onData(SocketIOClient socketIOClient, String s, AckRequest ackRequest) throws Exception {
                 nouvelAjout(socketIOClient);
@@ -55,13 +58,13 @@ public class Serveur {
     protected void nouveauClient(SocketIOClient socketIOClient, Identité id) {
         // map.put(id, socketIOClient);
         System.out.println(id+" vient de se connecter");
-        socketIOClient.sendEvent("valeur",compteur.getCpt());
+        socketIOClient.sendEvent(VALEUR_CPT,compteur.getCpt());
     }
 
     protected void nouvelAjout(SocketIOClient socketIOClient) {
         System.out.println("on ajoute");
         compteur.ajouter();
-        socketIOClient.sendEvent("valeur",compteur.getCpt());
+        socketIOClient.sendEvent(VALEUR_CPT,compteur.getCpt());
     }
 
     private void démarrer() {

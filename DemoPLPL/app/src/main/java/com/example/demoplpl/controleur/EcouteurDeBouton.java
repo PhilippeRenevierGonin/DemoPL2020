@@ -6,8 +6,8 @@ import android.view.View;
 import com.example.demoplpl.MainActivity;
 import com.example.demoplpl.R;
 import com.example.demoplpl.vue.Vue;
-import com.example.demoplpl.modele.Compteur;
 
+import constantes.NET;
 import io.socket.client.Socket;
 
 public class EcouteurDeBouton implements View.OnClickListener {
@@ -38,7 +38,7 @@ public class EcouteurDeBouton implements View.OnClickListener {
         vue.mettreÀJourLAffichageDuCompteur(modèle.getCpt());
            */
 
-        mSocket.emit("add");
+        mSocket.emit(NET.AJOUTER);
 
     }
 
