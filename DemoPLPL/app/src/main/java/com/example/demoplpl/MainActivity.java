@@ -56,7 +56,7 @@ public class MainActivity extends Activity implements Vue {
     protected void onPause() {
         super.onPause();
 
-        mSocket.disconnect();
+        if (mSocket != null) mSocket.disconnect();
     }
 
 
