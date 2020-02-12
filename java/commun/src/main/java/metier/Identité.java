@@ -1,6 +1,9 @@
 package metier;
 
-public class Identité {
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class Identité implements ToJSON {
 
     public String getNom() {
         return nom;
@@ -20,5 +23,15 @@ public class Identité {
 
     public String toString() {
         return this.getNom();
+    }
+
+    @Override
+    public JSONObject toJSON() {
+        JSONObject identité = new JSONObject();
+        try {
+            identité.put("nom", getNom());
+        } catch (JSONException e) {
+            e.printStackTrace();}
+        return identité;
     }
 }

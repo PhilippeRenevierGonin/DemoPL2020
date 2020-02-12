@@ -1,8 +1,11 @@
 package com.example.demoplpl;
 
+import android.content.Intent;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +23,20 @@ import static org.junit.Assert.*;
 public class MainActivityTest {
 
     @Rule
-    public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(MainActivity.class);
+    public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(MainActivity.class, true, false);
+
+    @Before
+    public void initConnexion() {
+
+
+
+        // Lazily start the Activity from the ActivityTestRule this time to inject the start Intent
+        Intent startIntent = new Intent();
+        startIntent.putExtra(MainActivity.AUTOCONNECT, false);
+        mActivityRule.launchActivity(startIntent);
+
+    }
+
 
 
     @Test

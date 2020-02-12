@@ -5,6 +5,7 @@ import android.view.View;
 
 import com.example.demoplpl.MainActivity;
 import com.example.demoplpl.R;
+import com.example.demoplpl.reseau.Connexion;
 import com.example.demoplpl.vue.Vue;
 
 import constantes.NET;
@@ -12,12 +13,12 @@ import io.socket.client.Socket;
 
 public class EcouteurDeBouton implements View.OnClickListener {
 
-    private final Socket mSocket;
+    private final Connexion mSocket;
     private final Vue vue;
 
 
 
-    public EcouteurDeBouton(Vue v, Socket mSocket) {
+    public EcouteurDeBouton(Vue v, Connexion mSocket) {
         this.vue = v;
         this.mSocket = mSocket;
     }
@@ -38,7 +39,7 @@ public class EcouteurDeBouton implements View.OnClickListener {
         vue.mettreÀJourLAffichageDuCompteur(modèle.getCpt());
            */
 
-        mSocket.emit(NET.AJOUTER);
+        mSocket.envoyer(NET.AJOUTER);
 
     }
 

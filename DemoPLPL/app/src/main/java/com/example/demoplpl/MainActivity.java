@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.example.demoplpl.controleur.EcouteurDeBouton;
 import com.example.demoplpl.controleur.EcouteurDeReseau;
 
+import com.example.demoplpl.reseau.Connexion;
 import com.example.demoplpl.vue.Vue;
 
 import org.json.JSONException;
@@ -24,12 +25,25 @@ import metier.Identité;
 
 public class MainActivity extends Activity implements Vue {
 
+    public static final String AUTOCONNECT = "AUTOCONNECT";
+
     private TextView texte;
     private Button bouton;
 
-    private Socket mSocket;
 
     private Identité monIdentité ;
+    private boolean autoconnect =  true;
+
+    public Connexion getConnexion() {
+        return connexion;
+    }
+
+    public void setConnexion(Connexion connexion) {
+        this.connexion = connexion;
+        this.connexion.écouterRéseau();
+    }
+
+    private Connexion connexion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +52,8 @@ public class MainActivity extends Activity implements Vue {
         setContentView(R.layout.activity_main);
 
         monIdentité = new Identité("Super Appli");
+
+        autoconnect = getIntent().getBooleanExtra(AUTOCONNECT, true);
     }
 
 
@@ -56,42 +72,45 @@ public class MainActivity extends Activity implements Vue {
     protected void onPause() {
         super.onPause();
 
-        if (mSocket != null) mSocket.disconnect();
+        if (connexion != null) connexion.disconnect();
     }
+
+
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        try {
-            Socket mSocket = IO.socket("http://10.0.2.2:10101");
 
-            EcouteurDeReseau net = new EcouteurDeReseau(this);
+            if (autoconnect) {
+                setConnexion(new Connexion(this));
+            }
 
-            mSocket.on(NET.VALEUR_CPT, net);
 
 
             texte = findViewById(R.id.text);
             bouton = findViewById(R.id.button);
 
 
-            // création de l'écouteur (le controleur)
-            EcouteurDeBouton ecouteur = new EcouteurDeBouton(this, mSocket);
-            bouton.setOnClickListener(ecouteur);
-
-            texte.setOnClickListener(ecouteur);
-
-            mSocket.connect();
 
 
-            JSONObject identité = new JSONObject();
-            try {
-                identité.put("nom", monIdentité.getNom());
-            } catch (JSONException e) {
-                e.printStackTrace();}
-            mSocket.emit(NET.CONNEXION, identité);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
+        if (autoconnect) {
+            initVue();
         }
+
+
+
+
+    }
+
+
+    protected void initVue() {
+        EcouteurDeBouton ecouteur = new EcouteurDeBouton(this, connexion);
+        // création de l'écouteur (le controleur)
+        bouton.setOnClickListener(ecouteur);
+        texte.setOnClickListener(ecouteur);
+
+        connexion.démarrerÉcoute();
+        connexion.envoyerMessage(NET.CONNEXION, monIdentité);
     }
 }
